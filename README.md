@@ -133,6 +133,34 @@ Le document `ARCHITECTURE.md` fournit une description complète (diagrammes, flu
 
 ---
 
+## Infrastructure as Code (Terraform)
+
+Le dossier [`terraform/`](terraform/) provisionne l'infrastructure cloud sur AWS :
+VPC + sous-réseaux multi-AZ, serveur EC2 (qui démarre la stack Docker via
+cloud-init), base **PostgreSQL managée (RDS)** et security groups restrictifs.
+Détails dans [`terraform/README.md`](terraform/README.md).
+
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars   # éditer
+terraform init && terraform validate && terraform plan
+terraform apply
+```
+
+Déploiement local / on-premise : `make start` (Docker Compose) ou les manifestes
+[`k8s/`](k8s/). Une CI GitHub Actions ([`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml))
+lint + build + publie les images, puis valide Compose, Kubernetes et Terraform.
+
+## Modèle de données
+
+Deux couches PostgreSQL (DDL dans [`sql/ddl/`](sql/ddl/)) :
+- **Opérationnel (3NF)** : source de vérité de la télémétrie historique.
+- **Analytique (star schema)** : dimensions conformes + tables de faits pour la BI.
+
+ERD, star schema et justifications dans [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md).
+
+---
+
 ## Pourquoi cette architecture ?
 
 ### 1. Ingestion HTTP + métriques Prometheus
