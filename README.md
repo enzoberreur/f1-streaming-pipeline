@@ -11,6 +11,8 @@ Plateforme de télémétrie et de monitoring inspirée d'un mur des stands de Fo
 
 L'objectif : fournir un environnement réaliste pour expérimenter des pipelines IoT/streaming et des tableaux de bord stratégiques.
 
+> **Pour le jury :** [`docs/EVALUATION.md`](docs/EVALUATION.md) relie chaque critère de notation à son emplacement, et [`docs/DEFENSE.md`](docs/DEFENSE.md) est le pack de questions/réponses pour l'oral.
+
 ---
 
 ## Démarrage rapide (tout en Docker)
