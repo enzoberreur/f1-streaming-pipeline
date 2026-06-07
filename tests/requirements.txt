@@ -1,6 +1,7 @@
 # Test dependencies for the unit-test suite.
 # Includes the runtime deps needed to import the service modules under test.
 pytest>=8.0
+pytest-cov>=4.1
 fastapi>=0.104.0
 uvicorn>=0.24.0
 pydantic>=2.5.0

@@ -33,7 +33,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: grafana-service
+            name: grafana
             port:
               number: 3000
       
@@ -42,34 +42,28 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: prometheus-service
+            name: prometheus
             port:
               number: 9090
       
-      # Airflow Web UI
-      - path: /airflow
-        pathType: Prefix
-        backend:
-          service:
-            name: airflow-service
-            port:
-              number: 8080
-      
+      # Airflow Web UI is operated via docker-compose / a managed Airflow and
+      # is not deployed in this cluster, so it is intentionally not routed here.
+
       # Stream Processor API
       - path: /api
         pathType: Prefix
         backend:
           service:
-            name: stream-processor-service
+            name: stream-processor
             port:
               number: 8001
-      
+
       # Sensor Metrics
       - path: /metrics
         pathType: Prefix
         backend:
           service:
-            name: sensor-simulator-service
+            name: sensor-simulator
             port:
               number: 8000
       
@@ -78,7 +72,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: grafana-service
+            name: grafana
             port:
               number: 3000
 

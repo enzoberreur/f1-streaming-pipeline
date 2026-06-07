@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensor-simulator
+  namespace: ferrari-f1
+  labels:
+    app: sensor-simulator
+    app.kubernetes.io/name: ferrari-f1
+    app.kubernetes.io/component: simulation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sensor-simulator
+  template:
+    metadata:
+      labels:
+        app: sensor-simulator
+    spec:
+      serviceAccountName: ferrari-f1-sa
+      containers:
+      - name: sensor-simulator
+        # Image published by CI to GHCR (see .github/workflows/ci-cd.yml).
+        # If the GHCR package is private, attach an imagePullSecret to this pod.
+        image: ghcr.io/enzoberreur/f1-streaming-pipeline/sensor-simulator:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: metrics
+          containerPort: 8000
+        env:
+        - name: SIMULATION_MODE
+          value: "championship"
+        - name: HTTP_ENDPOINT
+          value: "http://stream-processor:8001/telemetry"
+        - name: TARGET_THROUGHPUT_PER_CAR
+          value: "250"
+        - name: STREAM_PROCESSOR_API_KEY_HEADER
+          value: "X-Api-Key"
+        - name: STREAM_PROCESSOR_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ferrari-f1-secrets
+              key: api-key
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
+        # The simulator is a producer with no HTTP API; it only exposes a
+        # Prometheus metrics server on :8000, so we probe the TCP socket.
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sensor-simulator
+  namespace: ferrari-f1
+  labels:
+    app: sensor-simulator
+    app.kubernetes.io/name: ferrari-f1
+    app.kubernetes.io/component: simulation
+spec:
+  type: ClusterIP
+  ports:
+  - name: metrics
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: sensor-simulator
