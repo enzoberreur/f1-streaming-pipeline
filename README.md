@@ -1,5 +1,7 @@
 # Ferrari F1 IoT Smart Pit-Stop
 
+[![CI/CD](https://github.com/enzoberreur/f1-streaming-pipeline/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/enzoberreur/f1-streaming-pipeline/actions/workflows/ci-cd.yml)
+
 Plateforme de télémétrie et de monitoring inspirée d'un mur des stands de Formule 1. Le dépôt rassemble :
 
 - un simulateur de capteurs haute fréquence (HTTP + métriques Prometheus) ;
