@@ -18,8 +18,8 @@ L'objectif : fournir un environnement réaliste pour expérimenter des pipelines
 Pré-requis : Docker, Docker Compose et `make`.
 
 ```bash
-git clone https://github.com/enzoberreur/Automation_F1.git
-cd Automation_F1
+git clone https://github.com/enzoberreur/f1-streaming-pipeline.git
+cd f1-streaming-pipeline
 # Optionnel mais recommandé : définir la clé API utilisée entre le simulateur et le stream processor
 export STREAM_PROCESSOR_API_KEY="change-me-before-prod"
 make start
@@ -96,9 +96,9 @@ La configuration Docker Compose se trouve dans `docker-compose.yml`. Les manifes
 
 Les définitions JSON des dashboards résident dans `monitoring/` :
 
-- `grafana_dashboard_main.json` — vue opérations & thermique : vitesse, freins/pneus, anomalies, stratégie.
-- `grafana_dashboard_strategy.json` — suivi détaillé des recommandations pit-stop (probabilité de fenêtre, état de la piste, timeline stratégie).
-- `grafana_dashboard_data.json`, `grafana_dashboard_data_quality.json` — analyses complémentaires (débit, fraîcheur, qualité de données).
+- `grafana_dashboard_main.json` - vue opérations & thermique : vitesse, freins/pneus, anomalies, stratégie.
+- `grafana_dashboard_strategy.json` - suivi détaillé des recommandations pit-stop (probabilité de fenêtre, état de la piste, timeline stratégie).
+- `grafana_dashboard_data.json`, `grafana_dashboard_data_quality.json` - analyses complémentaires (débit, fraîcheur, qualité de données).
 
 Importer manuellement :
 
@@ -125,11 +125,11 @@ Toutes les métriques exposées par le simulateur sont décrites dans `sensor-si
 
 ## Architecture (aperçu)
 
-1. **Sensor Simulator** — orchestre 20 voitures (10 équipes officielles), applique anomalies et calcule des insights de stratégie.
-2. **Stream Processor** — consomme les événements HTTP, calcule des KPI temps réel et persiste l’état.
-3. **Prometheus** — scrappe le simulateur, le stream-processor, cAdvisor.
-4. **Grafana** — visualise la télémétrie, les insights de stratégie et la santé système.
-5. **Airflow** — planifie des jobs batch (relectures, calculs périodiques, tests de qualité).
+1. **Sensor Simulator** - orchestre 20 voitures (10 équipes officielles), applique anomalies et calcule des insights de stratégie.
+2. **Stream Processor** - consomme les événements HTTP, calcule des KPI temps réel et persiste l’état.
+3. **Prometheus** - scrappe le simulateur, le stream-processor, cAdvisor.
+4. **Grafana** - visualise la télémétrie, les insights de stratégie et la santé système.
+5. **Airflow** - planifie des jobs batch (relectures, calculs périodiques, tests de qualité).
 
 Le document `ARCHITECTURE.md` fournit une description complète (diagrammes, flux détaillés, cas d'usage).
 
@@ -245,8 +245,8 @@ Pour aller plus loin :
 
 ## Ressources complémentaires
 
-- `ARCHITECTURE.md` — détails techniques et flux.
-- `sensor-simulator/README.md` — fonctionnement du générateur de télémétrie.
-- `docs/` — cas d’usage métier, FAQ, notebooks exploratoires.
+- `ARCHITECTURE.md` - détails techniques et flux.
+- `sensor-simulator/README.md` - fonctionnement du générateur de télémétrie.
+- `docs/` - cas d’usage métier, FAQ, notebooks exploratoires.
 
 Bon run !
