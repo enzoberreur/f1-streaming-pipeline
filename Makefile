@@ -2,7 +2,7 @@
 
 COMPOSE ?= docker compose
 
-.PHONY: help start stop clean import-dashboards demo-links
+.PHONY: help start stop clean import-dashboards demo-links demo
 
 help: ## Show available commands
 	@echo "Available targets:"
@@ -33,5 +33,8 @@ demo-links: ## Print URLs for demo dashboards and services
 	@echo "  Sensor simulator metrics: http://localhost:8000/metrics"
 	@echo "  Stream processor API:    http://localhost:8001"
 	@echo "  PostgreSQL connection:   postgresql://airflow:airflow@postgres:5432/airflow (inside Docker network)"
+
+demo: ## Run the one-shot recorded demo (boots the stack + walks the pipeline)
+	bash demo.sh
 
 .DEFAULT_GOAL := help
