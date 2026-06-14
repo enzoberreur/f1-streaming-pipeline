@@ -104,3 +104,6 @@ test-telemetry.py
 check-endpoints.py
 ferrari-dashboard.html
 coverage.xml
+demo_evidence.html
+evidence_shot.png
+live_shot.png

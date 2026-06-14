@@ -1,70 +1,161 @@
 {
-  "dashboard": {
-    "id": null,
-    "title": "Ferrari F1 - Engineering Ops",
-    "tags": ["ferrari","ops","engineering"],
-    "schemaVersion": 30,
-    "version": 1,
-    "time": { "from": "now-30m", "to": "now" },
-    "templating": { "list": [ { "type": "datasource", "name": "datasource", "query": "prometheus", "current": { "text": "Prometheus", "value": "Prometheus" } } ] },
-    "panels": [
+  "id": null,
+  "title": "Ferrari F1 - Engineering Ops",
+  "tags": [
+    "ferrari",
+    "ops",
+    "engineering"
+  ],
+  "schemaVersion": 30,
+  "version": 1,
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
       {
-        "id": 1,
-        "type": "stat",
-        "title": "Targets Down (count)",
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "count(up == 0)", "refId": "A" } ]
-      },
-      {
-        "id": 2,
-        "type": "timeseries",
-        "title": "Prometheus Scrape Duration (max)",
-        "gridPos": { "h": 5, "w": 12, "x": 6, "y": 0 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "max(prometheus_sd_service_discovery_sync_seconds) or max(prometheus_target_interval_length_seconds)", "refId": "A" } ]
-      },
-      {
-        "id": 3,
-        "type": "timeseries",
-        "title": "Sensor Simulator Throughput (msg/s)",
-        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 4 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "ferrari_simulator_current_throughput_msg_per_sec", "refId": "A" }, { "expr": "rate(ferrari_simulator_messages_sent_total[30s])", "refId": "B" } ]
-      },
-      {
-        "id": 4,
-        "type": "timeseries",
-        "title": "Container CPU (cadvisor) - sensor-simulator",
-        "gridPos": { "h": 5, "w": 12, "x": 12, "y": 4 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "100 * rate(container_cpu_usage_seconds_total{container=~\".*sensor-simulator.*\"}[1m])", "refId": "A" } ]
-      },
-      {
-        "id": 5,
-        "type": "stat",
-        "title": "Grafana Health",
-        "gridPos": { "h": 3, "w": 6, "x": 0, "y": 10 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "up{job=\"grafana\"}", "refId": "A" } ]
-      },
-      {
-        "id": 6,
-        "type": "stat",
-        "title": "Stream-Processor Health (up)",
-        "gridPos": { "h": 3, "w": 6, "x": 6, "y": 10 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "up{job=\"stream-processor\"}", "refId": "A" } ]
-      },
-      {
-        "id": 7,
-        "type": "table",
-        "title": "Active Alerts (via Alertmanager if configured)",
-        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 13 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "ALERTS{alertstate=\"firing\"}", "refId": "A", "format": "table" } ]
+        "type": "datasource",
+        "name": "datasource",
+        "query": "prometheus",
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        }
       }
     ]
   },
-  "overwrite": true
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Targets Down (count)",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "count(up == 0)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Prometheus Scrape Duration (max)",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 6,
+        "y": 0
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "max(prometheus_sd_service_discovery_sync_seconds) or max(prometheus_target_interval_length_seconds)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Sensor Simulator Throughput (msg/s)",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "ferrari_simulator_current_throughput_msg_per_sec",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(ferrari_simulator_messages_sent_total[30s])",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Container CPU (cadvisor) - sensor-simulator",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "100 * rate(container_cpu_usage_seconds_total{container=~\".*sensor-simulator.*\"}[1m])",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Grafana Health",
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 0,
+        "y": 10
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "up{job=\"grafana\"}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Stream-Processor Health (up)",
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 6,
+        "y": 10
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "up{job=\"stream-processor\"}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "table",
+      "title": "Active Alerts (via Alertmanager if configured)",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "ALERTS{alertstate=\"firing\"}",
+          "refId": "A",
+          "format": "table"
+        }
+      ]
+    }
+  ]
 }

@@ -1,913 +1,910 @@
 {
-  "dashboard": {
-    "id": null,
-    "uid": "ferrari-main-dashboard",
-    "title": "F1 Pipeline Control Center",
-    "tags": [
-      "ferrari",
-      "pipeline",
-      "operations"
-    ],
-    "schemaVersion": 30,
-    "version": 1,
-    "refresh": "30s",
-    "time": {
-      "from": "now-6h",
-      "to": "now"
-    },
-    "timepicker": {
-      "refresh_intervals": [
-        "10s",
-        "30s",
-        "1m",
-        "5m",
-        "15m"
-      ]
-    },
-    "templating": {
-      "list": [
-        {
-          "type": "query",
-          "name": "car_id",
-          "label": "Car",
-          "datasource": "Prometheus",
-          "query": "label_values(ferrari_pitstop_score, car_id)",
-          "current": {
-            "text": "All",
-            "value": "$__all"
-          },
-          "multi": true,
-          "includeAll": true,
-          "allValue": ".*",
-          "refresh": 1
+  "id": null,
+  "uid": "ferrari-main-dashboard",
+  "title": "F1 Pipeline Control Center",
+  "tags": [
+    "ferrari",
+    "pipeline",
+    "operations"
+  ],
+  "schemaVersion": 30,
+  "version": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "car_id",
+        "label": "Car",
+        "datasource": "Prometheus",
+        "query": "label_values(ferrari_pitstop_score, car_id)",
+        "current": {
+          "text": "All",
+          "value": "$__all"
         },
-        {
-          "type": "interval",
-          "name": "rate_interval",
-          "label": "Rate window",
-          "options": [
-            {
-              "text": "1m",
-              "value": "1m"
-            },
-            {
-              "text": "5m",
-              "value": "5m"
-            },
-            {
-              "text": "15m",
-              "value": "15m"
-            }
-          ],
-          "current": {
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "refresh": 1
+      },
+      {
+        "type": "interval",
+        "name": "rate_interval",
+        "label": "Rate window",
+        "options": [
+          {
+            "text": "1m",
+            "value": "1m"
+          },
+          {
             "text": "5m",
             "value": "5m"
+          },
+          {
+            "text": "15m",
+            "value": "15m"
           }
-        },
-        {
-          "type": "interval",
-          "name": "latency_window",
-          "label": "Latency window",
-          "options": [
-            {
-              "text": "1m",
-              "value": "1m"
-            },
-            {
-              "text": "5m",
-              "value": "5m"
-            },
-            {
-              "text": "15m",
-              "value": "15m"
-            }
-          ],
-          "current": {
+        ],
+        "current": {
+          "text": "5m",
+          "value": "5m"
+        }
+      },
+      {
+        "type": "interval",
+        "name": "latency_window",
+        "label": "Latency window",
+        "options": [
+          {
+            "text": "1m",
+            "value": "1m"
+          },
+          {
             "text": "5m",
             "value": "5m"
-          }
-        }
-      ]
-    },
-    "panels": [
-      {
-        "id": 1,
-        "type": "row",
-        "title": "Pipeline Overview",
-        "gridPos": {
-          "h": 1,
-          "w": 24,
-          "x": 0,
-          "y": 0
-        }
-      },
-      {
-        "id": 2,
-        "type": "stat",
-        "title": "Ingestion throughput (msg/s)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 3,
-          "w": 4,
-          "x": 0,
-          "y": 1
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(ferrari_simulator_messages_sent_total{car_id=~\"$car_id\"}[$rate_interval]))",
-            "refId": "A"
-          }
-        ],
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 3,
-        "type": "stat",
-        "title": "Processing throughput (msg/s)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 3,
-          "w": 4,
-          "x": 4,
-          "y": 1
-        },
-        "targets": [
-          {
-            "expr": "sum(ferrari_current_throughput_msg_per_sec{car_id=~\"$car_id\"})",
-            "refId": "A"
-          }
-        ],
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 4,
-        "type": "stat",
-        "title": "Processing latency p95 (ms)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 3,
-          "w": 4,
-          "x": 8,
-          "y": 1
-        },
-        "targets": [
-          {
-            "expr": "histogram_quantile(0.95, sum(rate(ferrari_processing_latency_seconds_bucket[$latency_window])) by (le)) * 1000",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "ms",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 150
-                },
-                {
-                  "color": "red",
-                  "value": 300
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 5,
-        "type": "stat",
-        "title": "Active anomalies",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 3,
-          "w": 4,
-          "x": 12,
-          "y": 1
-        },
-        "targets": [
-          {
-            "expr": "sum(ferrari_active_anomalies)",
-            "refId": "A"
-          }
-        ],
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 6,
-        "type": "stat",
-        "title": "Pit stop score (avg)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 3,
-          "w": 4,
-          "x": 16,
-          "y": 1
-        },
-        "targets": [
-          {
-            "expr": "avg(ferrari_pitstop_score{car_id=~\"$car_id\"})",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "red",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 40
-                },
-                {
-                  "color": "green",
-                  "value": 70
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 7,
-        "type": "stat",
-        "title": "Delivery success (%)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 3,
-          "w": 4,
-          "x": 20,
-          "y": 1
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(ferrari_simulator_messages_sent_total{car_id=~\"$car_id\"}[$rate_interval])) / clamp_min(sum(rate(ferrari_simulator_messages_generated_total{car_id=~\"$car_id\"}[$rate_interval])), 1) * 100",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "percent",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "red",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 95
-                },
-                {
-                  "color": "green",
-                  "value": 99
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 8,
-        "type": "row",
-        "title": "Ingestion Health",
-        "gridPos": {
-          "h": 1,
-          "w": 24,
-          "x": 0,
-          "y": 4
-        }
-      },
-      {
-        "id": 9,
-        "type": "timeseries",
-        "title": "Messages generated vs sent",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 7,
-          "w": 12,
-          "x": 0,
-          "y": 5
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(ferrari_simulator_messages_generated_total{car_id=~\"$car_id\"}[$rate_interval]))",
-            "refId": "A",
-            "legendFormat": "Generated"
           },
           {
-            "expr": "sum(rate(ferrari_simulator_messages_sent_total{car_id=~\"$car_id\"}[$rate_interval]))",
-            "refId": "B",
-            "legendFormat": "Sent"
+            "text": "15m",
+            "value": "15m"
           }
         ],
-        "options": {
-          "legend": {
-            "displayMode": "table",
-            "placement": "bottom"
-          },
-          "tooltip": {
-            "mode": "single"
-          }
-        }
-      },
-      {
-        "id": 10,
-        "type": "timeseries",
-        "title": "Send errors (rate)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 7,
-          "w": 6,
-          "x": 12,
-          "y": 5
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(ferrari_simulator_send_errors_total{car_id=~\"$car_id\"}[$rate_interval]))",
-            "refId": "A",
-            "legendFormat": "Errors"
-          }
-        ],
-        "options": {
-          "legend": {
-            "displayMode": "hidden"
-          },
-          "tooltip": {
-            "mode": "single"
-          }
-        }
-      },
-      {
-        "id": 11,
-        "type": "stat",
-        "title": "Ingestion latency p99 (ms)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 7,
-          "w": 6,
-          "x": 18,
-          "y": 5
-        },
-        "targets": [
-          {
-            "expr": "histogram_quantile(0.99, sum(rate(ferrari_simulator_send_latency_seconds_bucket{car_id=~\"$car_id\"}[$latency_window])) by (le)) * 1000",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "ms",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 200
-                },
-                {
-                  "color": "red",
-                  "value": 400
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "orientation": "horizontal",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 12,
-        "type": "row",
-        "title": "Processing Performance",
-        "gridPos": {
-          "h": 1,
-          "w": 24,
-          "x": 0,
-          "y": 12
-        }
-      },
-      {
-        "id": 13,
-        "type": "timeseries",
-        "title": "Processing latency percentiles",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 7,
-          "w": 12,
-          "x": 0,
-          "y": 13
-        },
-        "targets": [
-          {
-            "expr": "histogram_quantile(0.5, sum(rate(ferrari_processing_latency_seconds_bucket[$latency_window])) by (le)) * 1000",
-            "refId": "A",
-            "legendFormat": "p50"
-          },
-          {
-            "expr": "histogram_quantile(0.95, sum(rate(ferrari_processing_latency_seconds_bucket[$latency_window])) by (le)) * 1000",
-            "refId": "B",
-            "legendFormat": "p95"
-          },
-          {
-            "expr": "histogram_quantile(0.99, sum(rate(ferrari_processing_latency_seconds_bucket[$latency_window])) by (le)) * 1000",
-            "refId": "C",
-            "legendFormat": "p99"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "ms"
-          }
-        },
-        "options": {
-          "legend": {
-            "displayMode": "table",
-            "placement": "bottom"
-          },
-          "tooltip": {
-            "mode": "single"
-          }
-        }
-      },
-      {
-        "id": 14,
-        "type": "timeseries",
-        "title": "Processing vs intake throughput",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 7,
-          "w": 6,
-          "x": 12,
-          "y": 13
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(ferrari_messages_received_total[$rate_interval]))",
-            "refId": "A",
-            "legendFormat": "Received"
-          },
-          {
-            "expr": "sum(ferrari_current_throughput_msg_per_sec{car_id=~\"$car_id\"})",
-            "refId": "B",
-            "legendFormat": "Processing"
-          }
-        ],
-        "options": {
-          "legend": {
-            "displayMode": "table",
-            "placement": "bottom"
-          },
-          "tooltip": {
-            "mode": "single"
-          }
-        }
-      },
-      {
-        "id": 15,
-        "type": "heatmap",
-        "title": "Message size distribution",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 7,
-          "w": 6,
-          "x": 18,
-          "y": 13
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(ferrari_message_size_bytes_bucket[$latency_window])) by (le)",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "bytes"
-          }
-        },
-        "options": {
-          "legend": {
-            "show": false
-          }
-        }
-      },
-      {
-        "id": 16,
-        "type": "row",
-        "title": "Anomaly Detection & Recommendations",
-        "gridPos": {
-          "h": 1,
-          "w": 24,
-          "x": 0,
-          "y": 20
-        }
-      },
-      {
-        "id": 17,
-        "type": "timeseries",
-        "title": "Anomalies detected by severity",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 6,
-          "w": 12,
-          "x": 0,
-          "y": 21
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(ferrari_anomalies_detected_total[$rate_interval])) by (severity)",
-            "refId": "A",
-            "legendFormat": "Severity {{severity}}"
-          }
-        ],
-        "options": {
-          "legend": {
-            "displayMode": "table",
-            "placement": "bottom"
-          },
-          "tooltip": {
-            "mode": "single"
-          }
-        }
-      },
-      {
-        "id": 18,
-        "type": "stat",
-        "title": "Critical anomalies ($rate_interval)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 12,
-          "y": 21
-        },
-        "targets": [
-          {
-            "expr": "sum(increase(ferrari_anomalies_detected_total{severity=\"critical\"}[$rate_interval]))",
-            "refId": "A"
-          }
-        ],
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 19,
-        "type": "timeseries",
-        "title": "Pit stop recommendations",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 18,
-          "y": 21
-        },
-        "targets": [
-          {
-            "expr": "rate(ferrari_pitstop_recommendations_total[$rate_interval])",
-            "refId": "A",
-            "legendFormat": "Recommendations"
-          }
-        ],
-        "options": {
-          "legend": {
-            "displayMode": "hidden"
-          }
-        }
-      },
-      {
-        "id": 20,
-        "type": "row",
-        "title": "Data Freshness & Quality",
-        "gridPos": {
-          "h": 1,
-          "w": 24,
-          "x": 0,
-          "y": 27
-        }
-      },
-      {
-        "id": 21,
-        "type": "stat",
-        "title": "Telemetry freshness (s)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 4,
-          "w": 8,
-          "x": 0,
-          "y": 28
-        },
-        "targets": [
-          {
-            "expr": "max(time() - timestamp(ferrari_simulator_current_throughput_msg_per_sec{car_id=~\"$car_id\"}))",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "s",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 15
-                },
-                {
-                  "color": "red",
-                  "value": 60
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 22,
-        "type": "stat",
-        "title": "Pit score freshness (s)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 4,
-          "w": 8,
-          "x": 8,
-          "y": 28
-        },
-        "targets": [
-          {
-            "expr": "max(time() - timestamp(ferrari_pitstop_score{car_id=~\"$car_id\"}))",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "s"
-          }
-        },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 23,
-        "type": "stat",
-        "title": "Avg message size (bytes)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 4,
-          "w": 8,
-          "x": 16,
-          "y": 28
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(ferrari_message_size_bytes_sum[$latency_window])) / sum(rate(ferrari_message_size_bytes_count[$latency_window]))",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "bytes"
-          }
-        },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 24,
-        "type": "row",
-        "title": "Service Health",
-        "gridPos": {
-          "h": 1,
-          "w": 24,
-          "x": 0,
-          "y": 32
-        }
-      },
-      {
-        "id": 25,
-        "type": "stat",
-        "title": "sensor-simulator up",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 4,
-          "w": 6,
-          "x": 0,
-          "y": 33
-        },
-        "targets": [
-          {
-            "expr": "up{job=\"sensor-simulator\"}",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "red",
-                  "value": null
-                },
-                {
-                  "color": "green",
-                  "value": 1
-                }
-              ]
-            }
-          }
-        }
-      },
-      {
-        "id": 26,
-        "type": "stat",
-        "title": "stream-processor up",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 4,
-          "w": 6,
-          "x": 6,
-          "y": 33
-        },
-        "targets": [
-          {
-            "expr": "up{job=\"stream-processor\"}",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "red",
-                  "value": null
-                },
-                {
-                  "color": "green",
-                  "value": 1
-                }
-              ]
-            }
-          }
-        }
-      },
-      {
-        "id": 27,
-        "type": "stat",
-        "title": "prometheus up",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 4,
-          "w": 6,
-          "x": 12,
-          "y": 33
-        },
-        "targets": [
-          {
-            "expr": "up{job=\"prometheus\"}",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "red",
-                  "value": null
-                },
-                {
-                  "color": "green",
-                  "value": 1
-                }
-              ]
-            }
-          }
-        }
-      },
-      {
-        "id": 28,
-        "type": "stat",
-        "title": "grafana up",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "h": 4,
-          "w": 6,
-          "x": 18,
-          "y": 33
-        },
-        "targets": [
-          {
-            "expr": "up{job=\"grafana\"}",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "red",
-                  "value": null
-                },
-                {
-                  "color": "green",
-                  "value": 1
-                }
-              ]
-            }
-          }
+        "current": {
+          "text": "5m",
+          "value": "5m"
         }
       }
     ]
   },
-  "overwrite": true
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Pipeline Overview",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Ingestion throughput (msg/s)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ferrari_simulator_messages_sent_total{car_id=~\"$car_id\"}[$rate_interval]))",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Processing throughput (msg/s)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(ferrari_current_throughput_msg_per_sec{car_id=~\"$car_id\"})",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Processing latency p95 (ms)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(ferrari_processing_latency_seconds_bucket[$latency_window])) by (le)) * 1000",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 150
+              },
+              {
+                "color": "red",
+                "value": 300
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Active anomalies",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(ferrari_active_anomalies)",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Pit stop score (avg)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 16,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "avg(ferrari_pitstop_score{car_id=~\"$car_id\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 40
+              },
+              {
+                "color": "green",
+                "value": 70
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Delivery success (%)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ferrari_simulator_messages_sent_total{car_id=~\"$car_id\"}[$rate_interval])) / clamp_min(sum(rate(ferrari_simulator_messages_generated_total{car_id=~\"$car_id\"}[$rate_interval])), 1) * 100",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 95
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "row",
+      "title": "Ingestion Health",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Messages generated vs sent",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ferrari_simulator_messages_generated_total{car_id=~\"$car_id\"}[$rate_interval]))",
+          "refId": "A",
+          "legendFormat": "Generated"
+        },
+        {
+          "expr": "sum(rate(ferrari_simulator_messages_sent_total{car_id=~\"$car_id\"}[$rate_interval]))",
+          "refId": "B",
+          "legendFormat": "Sent"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Send errors (rate)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 5
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ferrari_simulator_send_errors_total{car_id=~\"$car_id\"}[$rate_interval]))",
+          "refId": "A",
+          "legendFormat": "Errors"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "hidden"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Ingestion latency p99 (ms)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 5
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(ferrari_simulator_send_latency_seconds_bucket{car_id=~\"$car_id\"}[$latency_window])) by (le)) * 1000",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 200
+              },
+              {
+                "color": "red",
+                "value": 400
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 12,
+      "type": "row",
+      "title": "Processing Performance",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      }
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Processing latency percentiles",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(ferrari_processing_latency_seconds_bucket[$latency_window])) by (le)) * 1000",
+          "refId": "A",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(ferrari_processing_latency_seconds_bucket[$latency_window])) by (le)) * 1000",
+          "refId": "B",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(ferrari_processing_latency_seconds_bucket[$latency_window])) by (le)) * 1000",
+          "refId": "C",
+          "legendFormat": "p99"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "Processing vs intake throughput",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 13
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ferrari_messages_received_total[$rate_interval]))",
+          "refId": "A",
+          "legendFormat": "Received"
+        },
+        {
+          "expr": "sum(ferrari_current_throughput_msg_per_sec{car_id=~\"$car_id\"})",
+          "refId": "B",
+          "legendFormat": "Processing"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "type": "heatmap",
+      "title": "Message size distribution",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 13
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ferrari_message_size_bytes_bucket[$latency_window])) by (le)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "legend": {
+          "show": false
+        }
+      }
+    },
+    {
+      "id": 16,
+      "type": "row",
+      "title": "Anomaly Detection & Recommendations",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      }
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "Anomalies detected by severity",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 21
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ferrari_anomalies_detected_total[$rate_interval])) by (severity)",
+          "refId": "A",
+          "legendFormat": "Severity {{severity}}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "type": "stat",
+      "title": "Critical anomalies ($rate_interval)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 21
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(ferrari_anomalies_detected_total{severity=\"critical\"}[$rate_interval]))",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "Pit stop recommendations",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 21
+      },
+      "targets": [
+        {
+          "expr": "rate(ferrari_pitstop_recommendations_total[$rate_interval])",
+          "refId": "A",
+          "legendFormat": "Recommendations"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "hidden"
+        }
+      }
+    },
+    {
+      "id": 20,
+      "type": "row",
+      "title": "Data Freshness & Quality",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 27
+      }
+    },
+    {
+      "id": 21,
+      "type": "stat",
+      "title": "Telemetry freshness (s)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 28
+      },
+      "targets": [
+        {
+          "expr": "max(time() - timestamp(ferrari_simulator_current_throughput_msg_per_sec{car_id=~\"$car_id\"}))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 15
+              },
+              {
+                "color": "red",
+                "value": 60
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 22,
+      "type": "stat",
+      "title": "Pit score freshness (s)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 28
+      },
+      "targets": [
+        {
+          "expr": "max(time() - timestamp(ferrari_pitstop_score{car_id=~\"$car_id\"}))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 23,
+      "type": "stat",
+      "title": "Avg message size (bytes)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 28
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ferrari_message_size_bytes_sum[$latency_window])) / sum(rate(ferrari_message_size_bytes_count[$latency_window]))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 24,
+      "type": "row",
+      "title": "Service Health",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      }
+    },
+    {
+      "id": 25,
+      "type": "stat",
+      "title": "sensor-simulator up",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 33
+      },
+      "targets": [
+        {
+          "expr": "up{job=\"sensor-simulator\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 26,
+      "type": "stat",
+      "title": "stream-processor up",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 33
+      },
+      "targets": [
+        {
+          "expr": "up{job=\"stream-processor\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 27,
+      "type": "stat",
+      "title": "prometheus up",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 33
+      },
+      "targets": [
+        {
+          "expr": "up{job=\"prometheus\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 28,
+      "type": "stat",
+      "title": "grafana up",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 33
+      },
+      "targets": [
+        {
+          "expr": "up{job=\"grafana\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
 }

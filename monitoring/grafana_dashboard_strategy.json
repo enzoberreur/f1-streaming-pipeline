@@ -1,586 +1,583 @@
 {
-  "dashboard": {
-    "id": null,
-    "uid": "ferrari-strategy-dashboard",
-    "title": "F1 Multi-Team - Strategy",
-    "tags": [
-      "strategy",
-      "pitstop",
-      "multi-team"
-    ],
-    "schemaVersion": 30,
-    "version": 1,
-    "time": {
-      "from": "now-1h",
-      "to": "now"
-    },
-    "templating": {
-      "list": [
-        {
-          "type": "interval",
-          "name": "interval",
-          "label": "Interval",
-          "query": "1m,5m,15m,1h",
-          "current": {
-            "text": "5m",
-            "value": "5m"
-          }
-        },
-        {
-          "type": "query",
-          "name": "car_id",
-          "label": "Car",
-          "datasource": "Prometheus",
-          "query": "label_values(ferrari_pitstop_score, car_id)",
-          "current": {
-            "text": "All",
-            "value": "$__all"
-          },
-          "multi": true,
-          "includeAll": true,
-          "allValue": ".*",
-          "refresh": 1
-        }
-      ]
-    },
-    "panels": [
+  "id": null,
+  "uid": "ferrari-strategy-dashboard",
+  "title": "F1 Multi-Team - Strategy",
+  "tags": [
+    "strategy",
+    "pitstop",
+    "multi-team"
+  ],
+  "schemaVersion": 30,
+  "version": 1,
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
       {
-        "id": 1,
-        "type": "stat",
-        "title": "Efficiency Index (avg pitstop score)",
-        "gridPos": {
-          "h": 3,
-          "w": 6,
-          "x": 0,
-          "y": 0
-        },
-        "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "avg_over_time(ferrari_pitstop_score{car_id=~\"$car_id\"}[$interval])",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 50
-                },
-                {
-                  "color": "red",
-                  "value": 30
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
+        "type": "interval",
+        "name": "interval",
+        "label": "Interval",
+        "query": "1m,5m,15m,1h",
+        "current": {
+          "text": "5m",
+          "value": "5m"
         }
       },
       {
-        "id": 10,
-        "type": "stat",
-        "title": "Latest Lap Time (s)",
-        "gridPos": {
-          "h": 3,
-          "w": 6,
-          "x": 6,
-          "y": 0
-        },
+        "type": "query",
+        "name": "car_id",
+        "label": "Car",
         "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "last_over_time(ferrari_simulator_lap_time_seconds{car_id=~\"$car_id\"}[$interval])",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "s",
-            "decimals": 2,
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 90
-                },
-                {
-                  "color": "red",
-                  "value": 95
-                }
-              ]
-            }
-          }
+        "query": "label_values(ferrari_pitstop_score, car_id)",
+        "current": {
+          "text": "All",
+          "value": "$__all"
         },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 11,
-        "type": "stat",
-        "title": "Stint Health Score",
-        "gridPos": {
-          "h": 3,
-          "w": 6,
-          "x": 12,
-          "y": 0
-        },
-        "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "last_over_time(ferrari_simulator_stint_health_score{car_id=~\"$car_id\"}[$interval])",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "percent",
-            "decimals": 1,
-            "min": 0,
-            "max": 100,
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 60
-                },
-                {
-                  "color": "red",
-                  "value": 40
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 12,
-        "type": "stat",
-        "title": "Pit Window Probability",
-        "gridPos": {
-          "h": 3,
-          "w": 6,
-          "x": 18,
-          "y": 0
-        },
-        "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "last_over_time(ferrari_simulator_pit_window_probability{car_id=~\"$car_id\"}[$interval]) * 100",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "percent",
-            "decimals": 1,
-            "min": 0,
-            "max": 100,
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 45
-                },
-                {
-                  "color": "red",
-                  "value": 65
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ]
-          }
-        }
-      },
-      {
-        "id": 2,
-        "type": "timeseries",
-        "title": "Pitstop Score (over time)",
-        "gridPos": {
-          "h": 5,
-          "w": 12,
-          "x": 0,
-          "y": 3
-        },
-        "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "ferrari_pitstop_score{car_id=~\"$car_id\"}",
-            "refId": "A",
-            "legendFormat": "{{car_id}} {{driver}} · Pitstop score"
-          }
-        ],
-        "options": {
-          "legend": {
-            "placement": "bottom"
-          }
-        }
-      },
-      {
-        "id": 13,
-        "type": "timeseries",
-        "title": "Lap Time Trend",
-        "gridPos": {
-          "h": 5,
-          "w": 12,
-          "x": 12,
-          "y": 3
-        },
-        "datasource": "Prometheus",
-        "fieldConfig": {
-          "defaults": {
-            "unit": "s",
-            "decimals": 1
-          }
-        },
-        "targets": [
-          {
-            "expr": "ferrari_simulator_lap_time_seconds{car_id=~\"$car_id\"}",
-            "refId": "A",
-            "legendFormat": "{{car_id}} {{driver}} · Lap time"
-          },
-          {
-            "expr": "avg_over_time(ferrari_simulator_lap_time_seconds{car_id=~\"$car_id\"}[5m])",
-            "refId": "B",
-            "legendFormat": "{{car_id}} {{driver}} · Rolling avg (5m)"
-          }
-        ],
-        "options": {
-          "legend": {
-            "placement": "bottom"
-          }
-        }
-      },
-      {
-        "id": 14,
-        "type": "timeseries",
-        "title": "Stint Health vs Pit Probability",
-        "gridPos": {
-          "h": 5,
-          "w": 12,
-          "x": 0,
-          "y": 8
-        },
-        "datasource": "Prometheus",
-        "fieldConfig": {
-          "defaults": {
-            "unit": "percent",
-            "min": 0,
-            "max": 100
-          }
-        },
-        "targets": [
-          {
-            "expr": "ferrari_simulator_stint_health_score{car_id=~\"$car_id\"}",
-            "refId": "A",
-            "legendFormat": "{{car_id}} {{driver}} · Stint health"
-          },
-          {
-            "expr": "ferrari_simulator_pit_window_probability{car_id=~\"$car_id\"} * 100",
-            "refId": "B",
-            "legendFormat": "{{car_id}} {{driver}} · Pit window %"
-          }
-        ],
-        "options": {
-          "legend": {
-            "placement": "bottom"
-          }
-        }
-      },
-      {
-        "id": 3,
-        "type": "timeseries",
-        "title": "Tire Wear - projected",
-        "gridPos": {
-          "h": 5,
-          "w": 12,
-          "x": 12,
-          "y": 8
-        },
-        "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "avg_over_time(ferrari_simulator_tire_wear_percent{car_id=~\"$car_id\"}[$interval])",
-            "refId": "A",
-            "legendFormat": "{{car_id}} {{driver}} · Tire wear"
-          },
-          {
-            "expr": "avg_over_time(ferrari_simulator_tire_wear_percent{car_id=~\"$car_id\"}[30m]) + increase(ferrari_simulator_tire_wear_percent{car_id=~\"$car_id\"}[30m]) * (300/1800)",
-            "refId": "B",
-            "legendFormat": "{{car_id}} {{driver}} · Projection (5m)"
-          }
-        ]
-      },
-      {
-        "id": 4,
-        "type": "timeseries",
-        "title": "ERS vs Engine Temp (correlation)",
-        "gridPos": {
-          "h": 5,
-          "w": 12,
-          "x": 0,
-          "y": 13
-        },
-        "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "ferrari_simulator_ers_power_kw{car_id=~\"$car_id\"}",
-            "refId": "A",
-            "legendFormat": "{{car_id}} {{driver}} · ERS power"
-          },
-          {
-            "expr": "ferrari_simulator_engine_temp_celsius{car_id=~\"$car_id\"}",
-            "refId": "B",
-            "legendFormat": "{{car_id}} {{driver}} · Engine temp"
-          }
-        ]
-      },
-      {
-        "id": 15,
-        "type": "state-timeline",
-        "title": "Track Surface Condition",
-        "gridPos": {
-          "h": 4,
-          "w": 12,
-          "x": 0,
-          "y": 18
-        },
-        "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "ferrari_simulator_surface_condition_state{car_id=~\"$car_id\"}",
-            "legendFormat": "{{car_id}} {{driver}} · Surface",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "mappings": [
-              {
-                "options": {
-                  "0": {
-                    "text": "Optimal"
-                  },
-                  "1": {
-                    "text": "Cool"
-                  },
-                  "2": {
-                    "text": "Hot"
-                  },
-                  "3": {
-                    "text": "Damp"
-                  }
-                },
-                "type": "value"
-              }
-            ],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
-                },
-                {
-                  "color": "blue",
-                  "value": 0.5
-                },
-                {
-                  "color": "orange",
-                  "value": 1.5
-                },
-                {
-                  "color": "red",
-                  "value": 2.5
-                },
-                {
-                  "color": "purple",
-                  "value": 3.5
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "legend": {
-            "displayMode": "hidden"
-          }
-        }
-      },
-      {
-        "id": 16,
-        "type": "state-timeline",
-        "title": "Strategy Recommendation Timeline",
-        "gridPos": {
-          "h": 4,
-          "w": 12,
-          "x": 12,
-          "y": 18
-        },
-        "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "ferrari_simulator_strategy_recommendation_state{car_id=~\"$car_id\"}",
-            "legendFormat": "{{car_id}} {{driver}} · Recommendation",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "mappings": [
-              {
-                "options": {
-                  "0": {
-                    "text": "Extend"
-                  },
-                  "1": {
-                    "text": "Evaluate"
-                  },
-                  "2": {
-                    "text": "Pit soon"
-                  }
-                },
-                "type": "value"
-              }
-            ],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
-                },
-                {
-                  "color": "yellow",
-                  "value": 0.5
-                },
-                {
-                  "color": "red",
-                  "value": 1.5
-                },
-                {
-                  "color": "dark-red",
-                  "value": 2.5
-                }
-              ]
-            }
-          }
-        },
-        "options": {
-          "legend": {
-            "displayMode": "hidden"
-          }
-        }
-      },
-      {
-        "id": 5,
-        "type": "table",
-        "title": "Strategy Snapshot (latest)",
-        "gridPos": {
-          "h": 6,
-          "w": 24,
-          "x": 0,
-          "y": 22
-        },
-        "datasource": "Prometheus",
-        "targets": [
-          {
-            "expr": "last_over_time(ferrari_simulator_lap{car_id=~\"$car_id\"}[$interval])",
-            "refId": "F",
-            "format": "table"
-          },
-          {
-            "expr": "last_over_time(ferrari_simulator_lap_time_seconds{car_id=~\"$car_id\"}[$interval])",
-            "refId": "A",
-            "format": "table"
-          },
-          {
-            "expr": "last_over_time(ferrari_simulator_stint_health_score{car_id=~\"$car_id\"}[$interval])",
-            "refId": "B",
-            "format": "table"
-          },
-          {
-            "expr": "last_over_time(ferrari_simulator_pit_window_probability{car_id=~\"$car_id\"}[$interval])",
-            "refId": "C",
-            "format": "table"
-          },
-          {
-            "expr": "topk(1, ferrari_simulator_surface_condition_info{car_id=~\"$car_id\"})",
-            "refId": "D",
-            "format": "table"
-          },
-          {
-            "expr": "topk(1, ferrari_simulator_strategy_recommendation_info{car_id=~\"$car_id\"})",
-            "refId": "E",
-            "format": "table"
-          }
-        ],
-        "transformations": [
-          {
-            "id": "merge",
-            "options": {}
-          },
-          {
-            "id": "organize",
-            "options": {
-              "renameByName": {
-                "Value": "value",
-                "condition": "surface_condition",
-                "recommendation": "strategy_recommendation",
-                "lap_time_seconds": "lap_time_seconds",
-                "stint_health_score": "stint_health_score",
-                "pit_window_probability": "pit_window_probability",
-                "lap": "lap"
-              }
-            }
-          }
-        ]
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "refresh": 1
       }
     ]
   },
-  "overwrite": true
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Efficiency Index (avg pitstop score)",
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "avg_over_time(ferrari_pitstop_score{car_id=~\"$car_id\"}[$interval])",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 30
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Latest Lap Time (s)",
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "last_over_time(ferrari_simulator_lap_time_seconds{car_id=~\"$car_id\"}[$interval])",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Stint Health Score",
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "last_over_time(ferrari_simulator_stint_health_score{car_id=~\"$car_id\"}[$interval])",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 40
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 12,
+      "type": "stat",
+      "title": "Pit Window Probability",
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "last_over_time(ferrari_simulator_pit_window_probability{car_id=~\"$car_id\"}[$interval]) * 100",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 45
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Pitstop Score (over time)",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 3
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "ferrari_pitstop_score{car_id=~\"$car_id\"}",
+          "refId": "A",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Pitstop score"
+        }
+      ],
+      "options": {
+        "legend": {
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Lap Time Trend",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 3
+      },
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 1
+        }
+      },
+      "targets": [
+        {
+          "expr": "ferrari_simulator_lap_time_seconds{car_id=~\"$car_id\"}",
+          "refId": "A",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Lap time"
+        },
+        {
+          "expr": "avg_over_time(ferrari_simulator_lap_time_seconds{car_id=~\"$car_id\"}[5m])",
+          "refId": "B",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Rolling avg (5m)"
+        }
+      ],
+      "options": {
+        "legend": {
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "Stint Health vs Pit Probability",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "targets": [
+        {
+          "expr": "ferrari_simulator_stint_health_score{car_id=~\"$car_id\"}",
+          "refId": "A",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Stint health"
+        },
+        {
+          "expr": "ferrari_simulator_pit_window_probability{car_id=~\"$car_id\"} * 100",
+          "refId": "B",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Pit window %"
+        }
+      ],
+      "options": {
+        "legend": {
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Tire Wear - projected",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "avg_over_time(ferrari_simulator_tire_wear_percent{car_id=~\"$car_id\"}[$interval])",
+          "refId": "A",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Tire wear"
+        },
+        {
+          "expr": "avg_over_time(ferrari_simulator_tire_wear_percent{car_id=~\"$car_id\"}[30m]) + increase(ferrari_simulator_tire_wear_percent{car_id=~\"$car_id\"}[30m]) * (300/1800)",
+          "refId": "B",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Projection (5m)"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "ERS vs Engine Temp (correlation)",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "ferrari_simulator_ers_power_kw{car_id=~\"$car_id\"}",
+          "refId": "A",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 ERS power"
+        },
+        {
+          "expr": "ferrari_simulator_engine_temp_celsius{car_id=~\"$car_id\"}",
+          "refId": "B",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Engine temp"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "type": "state-timeline",
+      "title": "Track Surface Condition",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "ferrari_simulator_surface_condition_state{car_id=~\"$car_id\"}",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Surface",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "Optimal"
+                },
+                "1": {
+                  "text": "Cool"
+                },
+                "2": {
+                  "text": "Hot"
+                },
+                "3": {
+                  "text": "Damp"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "blue",
+                "value": 0.5
+              },
+              {
+                "color": "orange",
+                "value": 1.5
+              },
+              {
+                "color": "red",
+                "value": 2.5
+              },
+              {
+                "color": "purple",
+                "value": 3.5
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "hidden"
+        }
+      }
+    },
+    {
+      "id": 16,
+      "type": "state-timeline",
+      "title": "Strategy Recommendation Timeline",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "ferrari_simulator_strategy_recommendation_state{car_id=~\"$car_id\"}",
+          "legendFormat": "{{car_id}} {{driver}} \u00b7 Recommendation",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "Extend"
+                },
+                "1": {
+                  "text": "Evaluate"
+                },
+                "2": {
+                  "text": "Pit soon"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 1.5
+              },
+              {
+                "color": "dark-red",
+                "value": 2.5
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "hidden"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Strategy Snapshot (latest)",
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "last_over_time(ferrari_simulator_lap{car_id=~\"$car_id\"}[$interval])",
+          "refId": "F",
+          "format": "table"
+        },
+        {
+          "expr": "last_over_time(ferrari_simulator_lap_time_seconds{car_id=~\"$car_id\"}[$interval])",
+          "refId": "A",
+          "format": "table"
+        },
+        {
+          "expr": "last_over_time(ferrari_simulator_stint_health_score{car_id=~\"$car_id\"}[$interval])",
+          "refId": "B",
+          "format": "table"
+        },
+        {
+          "expr": "last_over_time(ferrari_simulator_pit_window_probability{car_id=~\"$car_id\"}[$interval])",
+          "refId": "C",
+          "format": "table"
+        },
+        {
+          "expr": "topk(1, ferrari_simulator_surface_condition_info{car_id=~\"$car_id\"})",
+          "refId": "D",
+          "format": "table"
+        },
+        {
+          "expr": "topk(1, ferrari_simulator_strategy_recommendation_info{car_id=~\"$car_id\"})",
+          "refId": "E",
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Value": "value",
+              "condition": "surface_condition",
+              "recommendation": "strategy_recommendation",
+              "lap_time_seconds": "lap_time_seconds",
+              "stint_health_score": "stint_health_score",
+              "pit_window_probability": "pit_window_probability",
+              "lap": "lap"
+            }
+          }
+        }
+      ]
+    }
+  ]
 }

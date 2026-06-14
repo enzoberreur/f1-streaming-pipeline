@@ -1,70 +1,182 @@
 {
-  "dashboard": {
-    "id": null,
-    "title": "Ferrari F1 - Data Exploratory",
-    "tags": ["ferrari","data","exploration"],
-    "schemaVersion": 30,
-    "version": 1,
-    "time": { "from": "now-1h", "to": "now" },
-    "templating": { "list": [ { "type": "datasource", "name": "datasource", "query": "prometheus", "current": { "text": "Prometheus", "value": "Prometheus" } } ] },
-    "panels": [
+  "id": null,
+  "title": "Ferrari F1 - Data Exploratory",
+  "tags": [
+    "ferrari",
+    "data",
+    "exploration"
+  ],
+  "schemaVersion": 30,
+  "version": 1,
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
       {
-        "id": 1,
-        "type": "timeseries",
-        "title": "Throughput (msg/s)",
-        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 0 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "ferrari_simulator_current_throughput_msg_per_sec", "refId": "A" }, { "expr": "rate(ferrari_simulator_messages_sent_total[30s])", "refId": "B" } ],
-        "options": { "legend": { "displayMode": "list", "placement": "bottom" } }
-      },
-      {
-        "id": 2,
-        "type": "timeseries",
-        "title": "Latency percentiles (p50/p90/p99)",
-        "gridPos": { "h": 5, "w": 12, "x": 0, "y": 6 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "histogram_quantile(0.5, sum(rate(ferrari_simulator_send_latency_seconds_bucket[1m])) by (le))", "refId": "A" }, { "expr": "histogram_quantile(0.9, sum(rate(ferrari_simulator_send_latency_seconds_bucket[1m])) by (le))", "refId": "B" }, { "expr": "histogram_quantile(0.99, sum(rate(ferrari_simulator_send_latency_seconds_bucket[1m])) by (le))", "refId": "C" } ],
-        "options": { "legend": { "placement": "bottom" } }
-      },
-      {
-        "id": 3,
-        "type": "timeseries",
-        "title": "Brake & Engine Temps (°C)",
-        "gridPos": { "h": 7, "w": 12, "x": 12, "y": 0 },
-        "datasource": "Prometheus",
-        "targets": [
-          { "expr": "ferrari_simulator_brake_temp_fl_celsius", "refId": "A" },
-          { "expr": "ferrari_simulator_brake_temp_fr_celsius", "refId": "B" },
-          { "expr": "ferrari_simulator_brake_temp_rl_celsius", "refId": "C" },
-          { "expr": "ferrari_simulator_brake_temp_rr_celsius", "refId": "D" },
-          { "expr": "ferrari_simulator_engine_temp_celsius", "refId": "E" }
-        ]
-      },
-      {
-        "id": 4,
-        "type": "stat",
-        "title": "Pitstop Score",
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 13 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "last_over_time(ferrari_pitstop_score[5m])", "refId": "A" }, { "expr": "ferrari_pitstop_score", "refId": "B" } ]
-      },
-      {
-        "id": 5,
-        "type": "table",
-        "title": "Tire Wear (avg)",
-        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 13 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "avg(ferrari_simulator_tire_wear_percent) by (instance)", "refId": "A", "format": "table" } ]
-      },
-      {
-        "id": 6,
-        "type": "timeseries",
-        "title": "Active Anomalies",
-        "gridPos": { "h": 4, "w": 12, "x": 12, "y": 13 },
-        "datasource": "Prometheus",
-        "targets": [ { "expr": "ferrari_active_anomalies", "refId": "A" } ]
+        "type": "datasource",
+        "name": "datasource",
+        "query": "prometheus",
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        }
       }
     ]
   },
-  "overwrite": true
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Throughput (msg/s)",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "ferrari_simulator_current_throughput_msg_per_sec",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(ferrari_simulator_messages_sent_total[30s])",
+          "refId": "B"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Latency percentiles (p50/p90/p99)",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(ferrari_simulator_send_latency_seconds_bucket[1m])) by (le))",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.9, sum(rate(ferrari_simulator_send_latency_seconds_bucket[1m])) by (le))",
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(ferrari_simulator_send_latency_seconds_bucket[1m])) by (le))",
+          "refId": "C"
+        }
+      ],
+      "options": {
+        "legend": {
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Brake & Engine Temps (\u00b0C)",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "ferrari_simulator_brake_temp_fl_celsius",
+          "refId": "A"
+        },
+        {
+          "expr": "ferrari_simulator_brake_temp_fr_celsius",
+          "refId": "B"
+        },
+        {
+          "expr": "ferrari_simulator_brake_temp_rl_celsius",
+          "refId": "C"
+        },
+        {
+          "expr": "ferrari_simulator_brake_temp_rr_celsius",
+          "refId": "D"
+        },
+        {
+          "expr": "ferrari_simulator_engine_temp_celsius",
+          "refId": "E"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Pitstop Score",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 13
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "last_over_time(ferrari_pitstop_score[5m])",
+          "refId": "A"
+        },
+        {
+          "expr": "ferrari_pitstop_score",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Tire Wear (avg)",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 13
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "avg(ferrari_simulator_tire_wear_percent) by (instance)",
+          "refId": "A",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Active Anomalies",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "ferrari_active_anomalies",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
 }
