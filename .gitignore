@@ -107,3 +107,9 @@ coverage.xml
 demo_evidence.html
 evidence_shot.png
 live_shot.png
+~$*
+scripts/demo_evidence.html
+scripts/evidence_shot.png
+_mermaid.min.js
+_pdf_*.html
+_dm_check.png

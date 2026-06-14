@@ -2,7 +2,7 @@ services:
   # Service de simulation des capteurs Ferrari F1
   sensor-simulator:
     build:
-      context: ./sensor-simulator
+      context: ../sensor-simulator
       dockerfile: Dockerfile
     container_name: ferrari-sensor-simulator
     environment:
@@ -28,7 +28,7 @@ services:
   # Service de traitement des flux de données
   stream-processor:
     build:
-      context: ./stream-processor
+      context: ../stream-processor
       dockerfile: Dockerfile
     container_name: ferrari-stream-processor
     environment:
@@ -66,7 +66,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
       # Schéma opérationnel + star schema appliqués au premier démarrage
       # (volume vierge; faire `docker compose down -v` pour réinitialiser)
-      - ./sql/ddl:/docker-entrypoint-initdb.d:ro
+      - ../sql/ddl:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
       interval: 10s
@@ -85,7 +85,7 @@ services:
   # Airflow Webserver
   airflow-webserver:
     build:
-      context: ./airflow
+      context: ../airflow
       dockerfile: Dockerfile
     container_name: ferrari-airflow-webserver
     command: >
@@ -110,7 +110,7 @@ services:
       - postgres
       - redis
     volumes:
-      - ./airflow/dags:/opt/airflow/dags
+      - ../airflow/dags:/opt/airflow/dags
       - airflow-logs:/opt/airflow/logs
     restart: unless-stopped
     networks:
@@ -119,7 +119,7 @@ services:
   # Airflow Scheduler
   airflow-scheduler:
     build:
-      context: ./airflow
+      context: ../airflow
       dockerfile: Dockerfile
     container_name: ferrari-airflow-scheduler
     command: airflow scheduler
@@ -139,7 +139,7 @@ services:
       - redis
       - airflow-webserver
     volumes:
-      - ./airflow/dags:/opt/airflow/dags
+      - ../airflow/dags:/opt/airflow/dags
       - airflow-logs:/opt/airflow/logs
     restart: unless-stopped
     networks:
@@ -148,7 +148,7 @@ services:
   # Service de monitoring
   monitoring:
     build:
-      context: ./monitoring
+      context: ../monitoring
       dockerfile: Dockerfile
     container_name: ferrari-monitoring
     environment:
@@ -164,9 +164,9 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
-      - ./monitoring/rules:/prometheus-rules
+      - ../monitoring/rules:/prometheus-rules
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -194,13 +194,13 @@ services:
       # built-in panels, and runtime install fails behind a TLS-inspecting proxy.
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
-      - ./monitoring/grafana-dashboards-provisioning.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-      - ./monitoring/grafana_dashboard_main.json:/etc/grafana/dashboards/main.json
-      - ./monitoring/grafana_dashboard_strategy.json:/etc/grafana/dashboards/strategy.json
-      - ./monitoring/grafana_dashboard_data.json:/etc/grafana/dashboards/data.json
-      - ./monitoring/grafana_dashboard_data_quality.json:/etc/grafana/dashboards/data_quality.json
-      - ./monitoring/grafana_dashboard_engineer.json:/etc/grafana/dashboards/engineer.json
+      - ../monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ../monitoring/grafana-dashboards-provisioning.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ../monitoring/grafana_dashboard_main.json:/etc/grafana/dashboards/main.json
+      - ../monitoring/grafana_dashboard_strategy.json:/etc/grafana/dashboards/strategy.json
+      - ../monitoring/grafana_dashboard_data.json:/etc/grafana/dashboards/data.json
+      - ../monitoring/grafana_dashboard_data_quality.json:/etc/grafana/dashboards/data_quality.json
+      - ../monitoring/grafana_dashboard_engineer.json:/etc/grafana/dashboards/engineer.json
     depends_on:
       - prometheus
     healthcheck:

@@ -1,0 +1,4 @@
+# Convenience wrapper: the real compose definition lives in docker/.
+# Lets you run "docker compose ..." from the repo root.
+include:
+  - docker/docker-compose.yml

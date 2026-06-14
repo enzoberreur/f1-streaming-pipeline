@@ -12,7 +12,7 @@
 # =============================================================================
 import http.server, socketserver, json, urllib.request, subprocess, time, html, pathlib, webbrowser, os, re, sys
 
-os.chdir(pathlib.Path(__file__).resolve().parent)
+os.chdir(pathlib.Path(__file__).resolve().parent.parent)
 PORT = int(os.environ.get("PORT", "8090"))
 SP, PROM = "http://localhost:8001", "http://localhost:9090"
 
@@ -210,9 +210,10 @@ def main():
     url = f"http://localhost:{PORT}/"
     print("\n  LIVE evidence dashboard running at:", url)
     print("  Opening it now, plus the live Grafana cockpit. Press Ctrl+C to stop.\n")
-    try:
-        webbrowser.open(url); time.sleep(1.2); webbrowser.open("http://localhost:3000/d/ferrari-strategy-dashboard")
-    except Exception: pass
+    if os.environ.get("NOBROWSER") != "1":
+        try:
+            webbrowser.open(url); time.sleep(1.2); webbrowser.open("http://localhost:3000/d/ferrari-strategy-dashboard")
+        except Exception: pass
     try: srv.serve_forever()
     except KeyboardInterrupt: print("\n  stopped.")
 

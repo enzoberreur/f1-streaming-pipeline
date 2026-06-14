@@ -9,7 +9,7 @@
 #   AUTO=1 bash demo.sh   # no pauses, fixed sleeps - unattended run
 #   bash demo.sh --open   # also open the dashboards in your browser
 set -uo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 GREEN='\033[0;32m'; BLUE='\033[0;34m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'
 AUTO="${AUTO:-0}"; OPEN=0
@@ -33,7 +33,7 @@ pause 1
 step "1/5  Deploy the full stack (Infrastructure as Code)"
 echo "\$ docker compose up --build -d"
 docker compose up --build -d
-[ -f ./import-dashboard.sh ] && bash ./import-dashboard.sh --silent 2>/dev/null && ok "Grafana dashboards imported"
+[ -f ./import-dashboard.sh ] && bash scripts/import-dashboard.sh --silent 2>/dev/null && ok "Grafana dashboards imported"
 pause
 
 step "2/5  Wait for services, then list them"

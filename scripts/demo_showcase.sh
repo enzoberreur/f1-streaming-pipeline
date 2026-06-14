@@ -11,7 +11,7 @@
 #   NOBROWSER=1 bash demo_showcase.sh # just build demo_evidence.html
 # =============================================================================
 set -uo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 C='\033[0;36m'; G='\033[0;32m'; Y='\033[1;33m'; W='\033[1;37m'; D='\033[2m'; N='\033[0m'
 NOBROWSER="${NOBROWSER:-0}"
 say(){ printf "${C}%s${N}\n" "$1"; }
@@ -216,7 +216,7 @@ HTML=f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
  <h2>Jury criterion coverage</h2>
  {crit_html}
 
- <div class="foot">github.com/enzoberreur/f1-streaming-pipeline &middot; regenerate live: <b>bash demo_showcase.sh</b> &middot; stop stack: <b>docker compose down</b></div>
+ <div class="foot">github.com/enzoberreur/f1-streaming-pipeline &middot; regenerate live: <b>python scripts/live_dashboard.py</b> &middot; stop stack: <b>docker compose down</b></div>
 </div></body></html>"""
 
 pathlib.Path("demo_evidence.html").write_text(HTML, encoding="utf-8")

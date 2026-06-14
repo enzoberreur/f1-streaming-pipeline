@@ -5,6 +5,7 @@
 # Environments: dev, staging, prod
 
 set -e
+cd "$(dirname "$0")/.."
 
 ENVIRONMENT=${1:-dev}
 NAMESPACE="ferrari-f1"

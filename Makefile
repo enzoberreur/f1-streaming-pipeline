@@ -11,7 +11,7 @@ help: ## Show available commands
 start: ## Rebuild and start the full stack
 	$(COMPOSE) down --remove-orphans
 	$(COMPOSE) up --build -d
-	./import-dashboard.sh --silent
+	scripts/import-dashboard.sh --silent
 
 stop: ## Stop all services
 	$(COMPOSE) down --remove-orphans
@@ -21,7 +21,7 @@ clean: ## Remove containers, volumes and Python caches
 	find . -type d -name '__pycache__' -prune -exec rm -rf {} +
 
 import-dashboards: ## Reload Grafana dashboards
-	./import-dashboard.sh
+	scripts/import-dashboard.sh
 
 demo-links: ## Print URLs for demo dashboards and services
 	@echo "Ferrari F1 demo endpoints:"
@@ -35,6 +35,6 @@ demo-links: ## Print URLs for demo dashboards and services
 	@echo "  PostgreSQL connection:   postgresql://airflow:airflow@postgres:5432/airflow (inside Docker network)"
 
 demo: ## Run the one-shot recorded demo (boots the stack + walks the pipeline)
-	bash demo.sh
+	bash scripts/demo.sh
 
 .DEFAULT_GOAL := help

@@ -13,7 +13,7 @@ L'objectif : fournir un environnement réaliste pour expérimenter des pipelines
 
 > **Pour le jury :** [`docs/EVALUATION.md`](docs/EVALUATION.md) relie chaque critère de notation à son emplacement, et [`docs/DEFENSE.md`](docs/DEFENSE.md) est le pack de questions/réponses pour l'oral.
 >
-> **Démo en une commande :** `bash demo.sh` (ou `make demo`) démarre toute la stack et déroule le pipeline (télémétrie temps réel, détection d'anomalies, score de pit-stop, dashboards), en s'arrêtant entre chaque étape pour la narration. `AUTO=1 bash demo.sh` pour un run sans pause.
+> **Démo en une commande :** `bash scripts/demo.sh` (ou `make demo`) démarre toute la stack et déroule le pipeline (télémétrie temps réel, détection d'anomalies, score de pit-stop, dashboards), en s'arrêtant entre chaque étape pour la narration. `AUTO=1 bash scripts/demo.sh` pour un run sans pause.
 
 ---
 

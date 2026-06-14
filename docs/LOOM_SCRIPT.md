@@ -24,7 +24,7 @@ prefixes; the deck brand is "F1 Smart Pit-Stop".
    Prometheus `http://localhost:9090`, Airflow `http://localhost:8088`.
 4. Open your editor on the repo so you can show files quickly.
 5. (Optional, for the autoscaling shot) have a local cluster ready:
-   `kubectl get nodes` returns a node, and you can run `./deploy-k8s.sh dev`.
+   `kubectl get nodes` returns a node, and you can run `bash scripts/deploy-k8s.sh dev`.
 6. Have the deck open to the architecture slide for the 20-second intro.
 
 ---
@@ -80,7 +80,7 @@ docker compose ps           # everything healthy
 **SAY (optional Kubernetes shot):** "The same stack deploys to Kubernetes."
 **CMD (optional):**
 ```
-./deploy-k8s.sh dev
+bash scripts/deploy-k8s.sh dev
 kubectl get pods -n ferrari-f1
 ```
 

@@ -7,7 +7,7 @@ echo "🔧 Fix rapide Kubernetes Ferrari F1..."
 echo "📦 Construction et chargement des images..."
 
 # Construire les images
-docker-compose build sensor-simulator stream-processor
+docker compose build sensor-simulator stream-processor
 
 # Pour Docker Desktop K8s, les images sont déjà disponibles
 # Pour minikube, il faudrait faire : minikube image load
