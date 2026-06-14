@@ -17,7 +17,7 @@ spec:
       labels:
         app: sensor-simulator
     spec:
-      serviceAccountName: ferrari-f1-sa
+      serviceAccountName: sensor-simulator-sa   # RBAC minimal dédié (voir rbac.yaml)
       containers:
       - name: sensor-simulator
         # Image published by CI to GHCR (see .github/workflows/ci-cd.yml).

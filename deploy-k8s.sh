@@ -67,7 +67,8 @@ setup_namespace() {
     
     kubectl apply -f $K8S_DIR/namespace.yaml
     kubectl apply -f $K8S_DIR/config.yaml
-    
+    kubectl apply -f $K8S_DIR/rbac.yaml
+
     success "Namespace configuré"
 }
 

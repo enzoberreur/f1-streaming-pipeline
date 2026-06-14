@@ -20,6 +20,8 @@ terraform/
 ├── database.tf      RDS PostgreSQL
 ├── outputs.tf       public IP, dashboard URLs, db endpoint
 ├── user_data.sh     cloud-init: install Docker + run the stack
+├── backend.tf.example   S3 remote state backend (copy to backend.tf)
+├── bootstrap/       one-time setup of the S3 state bucket + DynamoDB lock table
 └── terraform.tfvars.example
 ```
 
@@ -43,6 +45,25 @@ terraform apply
 Outputs include the Grafana/Airflow/Prometheus URLs and the SSH command. After
 ~2-3 minutes (cloud-init pulls images and starts the stack), open the Grafana URL.
 
+## Remote state
+
+State is local by default (fine for a solo demo). For shared or team use,
+store it in S3 with DynamoDB locking:
+
+```bash
+# One-time: create the state bucket + lock table (local state, separate config)
+terraform -chdir=bootstrap init
+terraform -chdir=bootstrap apply
+
+# Switch the root module to the S3 backend
+cp backend.tf.example backend.tf       # edit bucket/region/table if needed
+terraform init -migrate-state
+```
+
+The bucket is versioned, encrypted (AES256) and blocks all public access; the
+DynamoDB table prevents concurrent applies. `backend.tf` is gitignored so each
+environment can point at its own bucket.
+
 ## Teardown
 
 ```bash
@@ -52,8 +73,8 @@ terraform destroy
 ## Notes
 
 - `db_password` is sensitive; pass it via `TF_VAR_db_password` or `terraform.tfvars`
-  (gitignored). State files and tfvars are gitignored; use a remote backend
-  (S3 + DynamoDB lock) for team use.
+  (gitignored). State files and tfvars are gitignored; see "Remote state" above
+  for the S3 + DynamoDB backend.
 - For a local / on-premise deployment use the Docker Compose stack at the repo
   root (`make start`) or the Kubernetes manifests in [`../k8s`](../k8s).
 - CI runs `terraform fmt -check` and `terraform validate` on every push

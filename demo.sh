@@ -64,8 +64,8 @@ cat <<'URLS'
   Grafana (admin/admin):     http://localhost:3000
     Strategy cockpit:        http://localhost:3000/d/ferrari-strategy-dashboard
   Prometheus:                http://localhost:9090
-  Airflow web UI:            http://localhost:8080
-  cAdvisor (containers):     http://localhost:8082
+  Airflow web UI:            http://localhost:8088
+  cAdvisor (containers):     http://localhost:8083
   Sensor simulator metrics:  http://localhost:8000/metrics
   Stream processor API:      http://localhost:8001
 URLS

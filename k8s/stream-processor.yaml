@@ -17,7 +17,7 @@ spec:
       labels:
         app: stream-processor
     spec:
-      serviceAccountName: ferrari-f1-sa
+      serviceAccountName: stream-processor-sa   # RBAC minimal dédié (voir rbac.yaml)
       containers:
       - name: stream-processor
         # Image published by CI to GHCR (see .github/workflows/ci-cd.yml).
@@ -39,6 +39,14 @@ spec:
             secretKeyRef:
               name: ferrari-f1-secrets
               key: api-key
+        # Persistance vers le schéma opérationnel (sql/ddl) dans PostgreSQL
+        - name: ENABLE_DB_WRITES
+          value: "true"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: ferrari-f1-secrets
+              key: database-url
         resources:
           requests:
             memory: "256Mi"

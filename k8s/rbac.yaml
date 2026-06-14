@@ -1,0 +1,77 @@
+# RBAC dédié aux applications Ferrari F1.
+# Chaque Deployment applicatif utilise son propre ServiceAccount avec des
+# permissions minimales (lecture seule des ConfigMaps), au lieu du
+# ServiceAccount partagé ferrari-f1-sa (réservé à Airflow, voir namespace.yaml).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sensor-simulator-sa
+  namespace: ferrari-f1
+  labels:
+    app: sensor-simulator
+    app.kubernetes.io/name: ferrari-f1
+    app.kubernetes.io/component: serviceaccount
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: stream-processor-sa
+  namespace: ferrari-f1
+  labels:
+    app: stream-processor
+    app.kubernetes.io/name: ferrari-f1
+    app.kubernetes.io/component: serviceaccount
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ferrari-f1-app-role
+  namespace: ferrari-f1
+  labels:
+    app.kubernetes.io/name: ferrari-f1
+    app.kubernetes.io/component: rbac
+rules:
+# Lecture seule de la configuration applicative
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sensor-simulator-rolebinding
+  namespace: ferrari-f1
+  labels:
+    app: sensor-simulator
+    app.kubernetes.io/name: ferrari-f1
+    app.kubernetes.io/component: rbac
+subjects:
+- kind: ServiceAccount
+  name: sensor-simulator-sa
+  namespace: ferrari-f1
+roleRef:
+  kind: Role
+  name: ferrari-f1-app-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: stream-processor-rolebinding
+  namespace: ferrari-f1
+  labels:
+    app: stream-processor
+    app.kubernetes.io/name: ferrari-f1
+    app.kubernetes.io/component: rbac
+subjects:
+- kind: ServiceAccount
+  name: stream-processor-sa
+  namespace: ferrari-f1
+roleRef:
+  kind: Role
+  name: ferrari-f1-app-role
+  apiGroup: rbac.authorization.k8s.io

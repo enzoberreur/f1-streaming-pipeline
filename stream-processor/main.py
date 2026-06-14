@@ -14,6 +14,7 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass, field, fields
 from collections import deque
 import os
+import sys
 
 # FastAPI pour REST et métriques
 from fastapi import FastAPI, HTTPException, Request, status
@@ -22,6 +23,10 @@ import uvicorn
 
 # Prometheus
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+
+# Persistance PostgreSQL optionnelle (module local au service)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from db_writer import TelemetryDBWriter
 
 # Mode REST uniquement
 
@@ -508,6 +513,12 @@ class StreamProcessor:
                 ).inc()
                 logger.warning(f"⚠️  {anomaly.message}")
             
+            # Persistance PostgreSQL (mise en tampon, jamais bloquante)
+            if db_writer is not None:
+                db_writer.add_reading(telemetry)
+                for anomaly in anomalies:
+                    db_writer.add_anomaly(anomaly)
+
             # Calcul du score pit-stop
             pitstop_rec = self.pitstop_calculator.calculate_score(telemetry, anomalies)
             
@@ -602,6 +613,11 @@ app = FastAPI(
 # Instance du processeur
 processor = StreamProcessor()
 
+# Writer PostgreSQL optionnel (actif si DATABASE_URL + ENABLE_DB_WRITES=true)
+db_writer = TelemetryDBWriter.from_env()
+if db_writer is not None:
+    db_writer.start()
+
 
 @app.get("/")
 async def root():
@@ -656,6 +672,13 @@ async def receive_telemetry(request: Request, data: Dict):
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy"}
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Flush final du writer PostgreSQL à l'arrêt du service"""
+    if db_writer is not None:
+        db_writer.stop()
 
 
 @app.get("/metrics", response_class=PlainTextResponse)

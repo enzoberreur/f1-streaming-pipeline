@@ -17,6 +17,12 @@ services:
       - "8000:8000"
     depends_on:
       - stream-processor
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/metrics', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     restart: unless-stopped
     networks:
       - ferrari-network
@@ -32,8 +38,20 @@ services:
       - PORT=8001
       - STREAM_PROCESSOR_API_KEY=${STREAM_PROCESSOR_API_KEY:-changeme}
       - STREAM_PROCESSOR_API_KEY_HEADER=X-Api-Key
+      # Persistance vers le schéma opérationnel (sql/ddl) dans PostgreSQL
+      - ENABLE_DB_WRITES=${ENABLE_DB_WRITES:-true}
+      - DATABASE_URL=postgresql://airflow:airflow@postgres:5432/airflow
     ports:
       - "8001:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     restart: unless-stopped
     networks:
       - ferrari-network
@@ -48,6 +66,14 @@ services:
       - POSTGRES_DB=airflow
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      # Schéma opérationnel + star schema appliqués au premier démarrage
+      # (volume vierge; faire `docker compose down -v` pour réinitialiser)
+      - ./sql/ddl:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - ferrari-network
 
@@ -69,7 +95,7 @@ services:
                airflow users create --username admin --password admin --firstname Ferrari --lastname F1 --role Admin --email admin@ferrari.com &&
                airflow webserver"
     ports:
-      - "8080:8080"
+      - "8088:8080"
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
@@ -132,6 +158,11 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
     networks:
       - ferrari-network
@@ -147,7 +178,8 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_PROVISIONING_PATH=/etc/grafana/provisioning
-      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+      # Plugins are not downloaded at runtime: the provisioned dashboards use only
+      # built-in panels, and runtime install fails behind a TLS-inspecting proxy.
     volumes:
       - grafana-data:/var/lib/grafana
       - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
@@ -159,6 +191,12 @@ services:
       - ./monitoring/grafana_dashboard_engineer.json:/etc/grafana/dashboards/engineer.json
     depends_on:
       - prometheus
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
     networks:
       - ferrari-network
@@ -168,7 +206,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:v0.47.0
     container_name: ferrari-cadvisor
     ports:
-      - "8082:8080"
+      - "8083:8080"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro

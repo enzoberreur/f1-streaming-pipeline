@@ -1,0 +1,18 @@
+# Remote state backend (S3 + DynamoDB locking).
+#
+# 1. Create the bucket and lock table once:
+#      terraform -chdir=bootstrap init && terraform -chdir=bootstrap apply
+# 2. Copy this file to backend.tf and adjust bucket/region/table if you
+#    changed the bootstrap defaults. backend.tf is gitignored so each
+#    environment can point at its own bucket.
+# 3. Run `terraform init -migrate-state` to move the local state to S3.
+
+terraform {
+  backend "s3" {
+    bucket         = "ferrari-f1-terraform-state"
+    key            = "ferrari-f1-iot/terraform.tfstate"
+    region         = "eu-west-3"
+    dynamodb_table = "ferrari-f1-terraform-locks"
+    encrypt        = true
+  }
+}

@@ -62,6 +62,10 @@ data:
   # echo -n 'f1-api-key-2024-ferrari' | base64
   api-key: ZjEtYXBpLWtleS0yMDI0LWZlcnJhcmk=
 
+  # URL PostgreSQL pour la persistance du stream-processor
+  # echo -n 'postgresql://airflow:postgres@postgres:5432/airflow' | base64
+  database-url: cG9zdGdyZXNxbDovL2FpcmZsb3c6cG9zdGdyZXNAcG9zdGdyZXM6NTQzMi9haXJmbG93
+
 ---
 # PersistentVolumeClaim pour Prometheus
 apiVersion: v1

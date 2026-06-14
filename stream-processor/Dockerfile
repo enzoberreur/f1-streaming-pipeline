@@ -13,7 +13,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copie du code source
-COPY main.py .
+COPY main.py db_writer.py ./
 
 # Configuration par défaut
 ENV PROCESSOR_MODE=rest \
@@ -23,9 +23,9 @@ ENV PROCESSOR_MODE=rest \
 # Exposition du port
 EXPOSE 8001
 
-# Health check
+# Health check (urllib: stdlib, pas de dépendance supplémentaire)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8001/health')" || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=5)" || exit 1
 
 # Point d'entrée
 CMD ["python", "main.py"]
